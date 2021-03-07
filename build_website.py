@@ -67,10 +67,11 @@ def get_ties(round_no):
 def update_elo(round_no):
   wins = get_wins(round_no)
   ties = get_ties(round_no)
+  current_elo = elo.copy()
 
   for p in wins.keys():
     for o in wins[p]:
-      change = elo_change(elo[p], elo[o], 1)
+      change = elo_change(current_elo[p], current_elo[o], 1)
       elo[p] += change
       elo[o] -= change
 
@@ -79,7 +80,7 @@ def update_elo(round_no):
 
   for p in ties.keys():
     for o in ties[p]:
-      change = elo_change(elo[p], elo[o], 0.5)
+      change = elo_change(current_elo[p], current_elo[o], 0.5)
       elo[p] += change
       record[p][2] += 1
 
@@ -134,7 +135,7 @@ elo_main = elo_main.reset_index(drop=True)
 
 # =================================================================
 # elo over time plot (image)
-plot = pd.DataFrame(elo_history).plot(figsize=(12,6), marker='o', title='Elo Change')
+plot = pd.DataFrame(elo_history).plot(figsize=(10,5), marker='o')
 plt.savefig('elo_change.png', bbox_inches='tight')
 # =================================================================
 
@@ -145,21 +146,45 @@ plt.savefig('elo_change.png', bbox_inches='tight')
 
 template = Template(
 """
-<h1>Purdue Disc Golf</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-<table style="border-collapse: collapse; width: 100%; height: 34px;" border="1">
+  <meta charset="utf-8">
+  <title>Purdue Disc Golf</title>
+  <meta name="author" content="Jack Arnold">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+
+<header class="w3-center w3-black">
+  <h1>Purdue Disc Golf</h1>
+</header>
+
+<div class="w3-container">
+  <h2>Current Standings</h2>
+</div>
+
+<div class="w3-container">
+<table class="w3-table w3-striped w3-bordered">
 <tbody>
 
-<tr>
-  <td style="width: 12%;"><strong>Rank</strong></td>
-  <td style="width: 22%;"><strong>Player</strong></td>
-  <td style="width: 22%;"><strong>Rating</strong></td>
-  <td style="width: 22%;"><strong>Record</strong></td>
-  <td style="width: 22%;"><strong>Win %</strong></td>
+<tr class="w3-theme">
+  <th><strong>Rank</strong></td>
+  <th><strong>Player</strong></td>
+  <th><strong>Rating</strong></td>
+  <th><strong>Record</strong></td>
+  <th><strong>Win %</strong></td>
 </tr>
 
 {% for rank, player, rating, record, pct in elo_main %}
-  <tr>
+  <tr class="w3-white">
     <td>{{rank}}</td>
     <td>{{player}}</td>
     <td>{{rating}}</td>
@@ -170,15 +195,25 @@ template = Template(
 
 </tbody>
 </table>
+</div>
 
+<div class="w3-padding w3-white w3-display-container">
 <p>
   Work is still in progress for this page. New updates and features are coming soon.
   All calculations are subject to change until further testing is done.
 </p>
+</div>
 
-<h2>Ratings Change Over Time<h2>
-<img src="elo_change.png">
+<div class="w3-container">
+  <h2>Ratings Change Over Time<h2>
+</div>
 
+<div class="w3-content" style="max-width:800px;position:relative">
+  <img src="elo_change.png" style="width:100%">
+</div>
+
+</body>
+</html>
 """)
 
 

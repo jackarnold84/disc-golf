@@ -38,55 +38,15 @@
   <th><strong>Win%</strong></th>
 </tr>
 
-
+{% for rank, player, rating, record, pct in elo_main %}
   <tr class="w3-white">
-    <td>1</td>
-    <td>Jack</td>
-    <td>120.5</td>
-    <td>16-6-1</td>
-    <td>0.717</td>
+    <td>{{rank}}</td>
+    <td>{{player}}</td>
+    <td>{{rating}}</td>
+    <td>{{record}}</td>
+    <td>{{pct}}</td>
   </tr>
-
-  <tr class="w3-white">
-    <td>2</td>
-    <td>Rohan</td>
-    <td>119.6</td>
-    <td>15-8-0</td>
-    <td>0.652</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>3</td>
-    <td>Josh</td>
-    <td>114.8</td>
-    <td>11-5-1</td>
-    <td>0.676</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>4</td>
-    <td>Luke</td>
-    <td>90.7</td>
-    <td>4-8-1</td>
-    <td>0.346</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>5</td>
-    <td>Tanner</td>
-    <td>87.5</td>
-    <td>12-16-3</td>
-    <td>0.435</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>6</td>
-    <td>Nick</td>
-    <td>67.0</td>
-    <td>3-18-0</td>
-    <td>0.143</td>
-  </tr>
-
+{% endfor %}
 
 </tbody>
 </table>
@@ -110,7 +70,7 @@
 </div>
 
 <div class="w3-container">
-<h4>Murdock Park &nbsp (3/6/2021)</h4>
+<h4>{{course_1}} &nbsp ({{date_1}})</h4>
 <table class="w3-table w3-striped w3-bordered">
 <tbody>
 
@@ -120,31 +80,13 @@
   <th><strong>Rating Change</strong></th>
 </tr>
 
-
+{% for player, score, change in round_1 %}
   <tr class="w3-white">
-    <td>Rohan</td>
-    <td>0</td>
-    <td>+7.8</td>
+    <td>{{player}}</td>
+    <td>{{score}}</td>
+    <td>{{change}}</td>
   </tr>
-
-  <tr class="w3-white">
-    <td>Nick</td>
-    <td>2</td>
-    <td>+6.3</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>Tanner</td>
-    <td>3</td>
-    <td>-2.2</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>Jack</td>
-    <td>5</td>
-    <td>-11.9</td>
-  </tr>
-
+{% endfor %}
 
 </tbody>
 </table>
@@ -153,7 +95,7 @@
 
 <!-- Recent 2 -->
 <div class="w3-container">
-<h4>Washout Woods &nbsp (3/4/2021)</h4>
+<h4>{{course_2}} &nbsp ({{date_2}})</h4>
 <table class="w3-table w3-striped w3-bordered">
 <tbody>
 
@@ -163,25 +105,13 @@
   <th><strong>Rating Change</strong></th>
 </tr>
 
-
+{% for player, score, change in round_2 %}
   <tr class="w3-white">
-    <td>Josh</td>
-    <td>6</td>
-    <td>+5.2</td>
+    <td>{{player}}</td>
+    <td>{{score}}</td>
+    <td>{{change}}</td>
   </tr>
-
-  <tr class="w3-white">
-    <td>Tanner</td>
-    <td>10</td>
-    <td>-2.6</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>Luke</td>
-    <td>10</td>
-    <td>-2.7</td>
-  </tr>
-
+{% endfor %}
 
 </tbody>
 </table>
@@ -190,7 +120,7 @@
 
 <!-- Recent 3 -->
 <div class="w3-container">
-<h4>Murdock Park &nbsp (3/4/2021)</h4>
+<h4>{{course_3}} &nbsp ({{date_3}})</h4>
 <table class="w3-table w3-striped w3-bordered">
 <tbody>
 
@@ -200,25 +130,13 @@
   <th><strong>Rating Change</strong></th>
 </tr>
 
-
+{% for player, score, change in round_3 %}
   <tr class="w3-white">
-    <td>Josh</td>
-    <td>3</td>
-    <td>+5.6</td>
+    <td>{{player}}</td>
+    <td>{{score}}</td>
+    <td>{{change}}</td>
   </tr>
-
-  <tr class="w3-white">
-    <td>Luke</td>
-    <td>6</td>
-    <td>+0.4</td>
-  </tr>
-
-  <tr class="w3-white">
-    <td>Tanner</td>
-    <td>8</td>
-    <td>-6.0</td>
-  </tr>
-
+{% endfor %}
 
 </tbody>
 </table>
@@ -243,7 +161,7 @@
 </div>
 
 <div class="w3-container">
-  <p>Last Update: 03-07-2021</p>
+  <p>Last Update: {{last_update}}</p>
   <p>View All Data:
     <a href="info/all-data.html">Logged Rounds</a>
   </p>

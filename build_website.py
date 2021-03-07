@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from jinja2 import Template
+from datetime import datetime
 
 # =================================================================
 # CALCULATIONS
@@ -19,8 +20,8 @@ log = pd.read_excel(file_path, sheet_name=sheet_name)
 # =================================================================
 # elo parameters
 B = 10
-SEP = 100
-K = 4
+SEP = 150
+K = 6
 START = 100
 
 # player setup
@@ -130,13 +131,46 @@ elo_main = pd.DataFrame({"Rank":rank_list, "Player":players, "Rating":elo_list,
 
 elo_main = elo_main.sort_values("Rank")
 elo_main = elo_main.reset_index(drop=True)
+
+
+# get recent round info
+def get_recent_round_info(round_num):
+  round = log.loc[round_num-1].dropna()
+  round['Date'] = str(round['Date'].date().month) + '/' + \
+                  str(round['Date'].date().day) + '/' + \
+                  str(round['Date'].date().year)
+
+  round_info = [round['Course'], round['Date'], round['Temp'], round['Wind']]
+  player_list = []
+  score_list = []
+  elo_change_list = []
+  for p in players:
+    if p in round:
+      player_list.append(p)
+      score_list.append(round[p])
+      change = elo_history[p][round_num] - elo_history[p][round_num-1]
+      if change >= 0:
+        elo_change_list.append('+' + str(np.round(change, 1)))
+      else:
+        elo_change_list.append(str(np.round(change, 1)))
+
+  scores = pd.DataFrame({"Player":player_list, "Score":score_list, "Change":elo_change_list})
+  scores['Score'] = pd.to_numeric(scores['Score'], downcast='integer')
+  scores = scores.sort_values('Score').reset_index(drop=True)
+
+  return round_info, scores
+
+n_rounds = log.shape[0]
+round_info_1, scores_1 = get_recent_round_info(n_rounds)
+round_info_2, scores_2 = get_recent_round_info(n_rounds-1)
+round_info_3, scores_3 = get_recent_round_info(n_rounds-2)
 # =================================================================
 
 
 # =================================================================
 # elo over time plot (image)
 plot = pd.DataFrame(elo_history).plot(figsize=(10,5), marker='o')
-plt.savefig('elo_change.png', bbox_inches='tight')
+plt.savefig('images/elo_change.png', bbox_inches='tight')
 # =================================================================
 
 
@@ -144,79 +178,31 @@ plt.savefig('elo_change.png', bbox_inches='tight')
 # GENERATE HTML PAGE
 # =================================================================
 
-template = Template(
-"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
+# main page (index.html)
+with open('templates/main-template.html', 'r') as file:
+    template_text = file.read()
 
-  <meta charset="utf-8">
-  <title>Purdue Disc Golf</title>
-  <meta name="author" content="Jack Arnold">
+template = Template(template_text)
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
-
-</head>
-
-<body>
-
-<header class="w3-center w3-black">
-  <h1>Purdue Disc Golf</h1>
-</header>
-
-<div class="w3-container">
-  <h2>Current Standings</h2>
-</div>
-
-<div class="w3-container">
-<table class="w3-table w3-striped w3-bordered">
-<tbody>
-
-<tr class="w3-theme">
-  <th><strong>Rank</strong></td>
-  <th><strong>Player</strong></td>
-  <th><strong>Rating</strong></td>
-  <th><strong>Record</strong></td>
-  <th><strong>Win %</strong></td>
-</tr>
-
-{% for rank, player, rating, record, pct in elo_main %}
-  <tr class="w3-white">
-    <td>{{rank}}</td>
-    <td>{{player}}</td>
-    <td>{{rating}}</td>
-    <td>{{record}}</td>
-    <td>{{pct}}</td>
-  </tr>
-{% endfor %}
-
-</tbody>
-</table>
-</div>
-
-<div class="w3-padding w3-white w3-display-container">
-<p>
-  Work is still in progress for this page. New updates and features are coming soon.
-  All calculations are subject to change until further testing is done.
-</p>
-</div>
-
-<div class="w3-container">
-  <h2>Ratings Change Over Time<h2>
-</div>
-
-<div class="w3-content" style="max-width:800px;position:relative">
-  <img src="elo_change.png" style="width:100%">
-</div>
-
-</body>
-</html>
-""")
-
-
-html = template.render(elo_main=elo_main.values)
+html = template.render(elo_main=elo_main.values,
+                       last_update=datetime.now().strftime('%m-%d-%Y'),
+                       course_1=round_info_1[0], date_1=round_info_1[1], round_1=scores_1.values,
+                       course_2=round_info_2[0], date_2=round_info_2[1], round_2=scores_2.values,
+                       course_3=round_info_3[0], date_3=round_info_3[1], round_3=scores_3.values)
 with open("index.html", "w") as html_file:
+    html_file.write(html)
+
+
+
+# view all data page
+with open('templates/all-data-template.html', 'r') as file:
+    template_text = file.read()
+
+template = Template(template_text)
+
+log['Date'] = log['Date'].dt.date
+for col in players:
+   log[col] = log[col].apply(lambda x: int(x) if x == x else "")
+html = template.render(log=log.values)
+with open("info/all-data.html", "w") as html_file:
     html_file.write(html)

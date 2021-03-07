@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <title>Purdue Disc Golf</title>
+  <meta name="author" content="Jack Arnold">
+  <link rel="icon" href="../images/basket_icon.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+
+<header class="w3-center w3-black">
+  <h1>Purdue Disc Golf</h1>
+</header>
+
+<div class="w3-container">
+  <a href="../index.html">< Back To Home</a>
+  <h2>View All Data</h2>
+</div>
+
+<div class="w3-container">
+<table class="w3-table w3-striped w3-bordered">
+<tbody>
+
+<tr class="w3-theme">
+  <th><strong>Round</strong></th>
+  <th><strong>Date</strong></th>
+  <th><strong>Course</strong></th>
+  <th><strong>Temp</strong></th>
+  <th><strong>Wind</strong></th>
+  <th><strong>Jack</strong></th>
+  <th><strong>Tanner</strong></th>
+  <th><strong>Rohan</strong></th>
+  <th><strong>Nick</strong></th>
+  <th><strong>Josh</strong></th>
+  <th><strong>Luke</strong></th>
+</tr>
+
+{% for round, date, course, temp, wind,
+       jack, tanner, rohan, nick, josh, luke in log %}
+  <tr class="w3-white">
+    <td>{{round}}</td>
+    <td>{{date}}</td>
+    <td>{{course}}</td>
+    <td>{{temp}}</td>
+    <td>{{wind}}</td>
+    <td>{{jack}}</td>
+    <td>{{tanner}}</td>
+    <td>{{rohan}}</td>
+    <td>{{nick}}</td>
+    <td>{{josh}}</td>
+    <td>{{luke}}</td>
+  </tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+
+</body>
+</html>

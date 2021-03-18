@@ -11,9 +11,10 @@ from datetime import datetime
 # =================================================================
 # read file
 file_path = "Disc Golf Log.xlsx"
-sheet_name = "Log"
 
-log = pd.read_excel(file_path, sheet_name=sheet_name)
+log = pd.read_excel(file_path, sheet_name="Log")
+courses = pd.read_excel(file_path, sheet_name="Courses")
+courses.index = courses['Name']
 # =================================================================
 
 
@@ -33,10 +34,10 @@ record = {p : [0, 0, 0] for p in players}
 
 # =================================================================
 # calculation helper functions
-def elo_change(e1, e2, result):
+def elo_change(e1, e2, result, weight=1.0):
   assert result==0 or result==1 or result==0.5
   expected = 1 / (1 + B**( (e2-e1)/SEP ))
-  return K*(result - expected)
+  return (K*weight) * (result-expected)
 
 
 def get_wins(round_no):
@@ -65,14 +66,26 @@ def get_ties(round_no):
   return ties
 
 
+def get_course_weight(round_no):
+  course = log.iloc[round_no-1]['Course']
+
+  if course not in courses.index:
+    return 1
+  elif courses.loc[course]['Holes'] < 10:
+    return 0.5
+  else:
+    return 1
+
+
 def update_elo(round_no):
+  wt = get_course_weight(round_no)
   wins = get_wins(round_no)
   ties = get_ties(round_no)
   current_elo = elo.copy()
 
   for p in wins.keys():
     for o in wins[p]:
-      change = elo_change(current_elo[p], current_elo[o], 1)
+      change = elo_change(current_elo[p], current_elo[o], 1, wt)
       elo[p] += change
       elo[o] -= change
 
@@ -81,7 +94,7 @@ def update_elo(round_no):
 
   for p in ties.keys():
     for o in ties[p]:
-      change = elo_change(current_elo[p], current_elo[o], 0.5)
+      change = elo_change(current_elo[p], current_elo[o], 0.5, wt)
       elo[p] += change
       record[p][2] += 1
 
